@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Franco Conte — Sound Design & Music Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant:ital,wght@1,300&family=Syne:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ede8;
+    --muted: #555;
+    --accent: #41d14c;
+    --border: rgba(240,237,232,0.1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                height 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* default: white solid dot */
+  .cursor .cursor-dot {
+    position: absolute;
+    width: 7px; height: 7px;
+    background: var(--fg);
+    border-radius: 50%;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    transform: scale(1);
+  }
+
+  /* star shape — hidden by default */
+  .cursor .cursor-star {
+    position: absolute;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform: scale(0.4) rotate(-15deg);
+  }
+
+  .cursor .cursor-star svg {
+    width: 100%; height: 100%;
+  }
+
+  /* hover state: star appears, dot hides */
+  .cursor.hover {
+    width: 28px; height: 28px;
+  }
+  .cursor.hover .cursor-dot {
+    opacity: 0;
+    transform: scale(0);
+  }
+  .cursor.hover .cursor-star {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  /* play state (over hero): bigger star */
+  .cursor.play {
+    width: 40px; height: 40px;
+  }
+  .cursor.play .cursor-dot {
+    opacity: 0;
+    transform: scale(0);
+  }
+  .cursor.play .cursor-star {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 28px; left: 28px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .nav-name {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+  }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 300;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .hero-thumb {
+    position: absolute;
+    inset: 0;
+    background: #111;
+    overflow: hidden;
+  }
+
+  .hero-thumb img,
+  .hero-thumb video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.4s ease, transform 0.6s ease;
+  }
+
+  .hero:hover .hero-thumb img,
+  .hero:hover .hero-thumb video {
+    opacity: 0.85;
+    transform: scale(1.015);
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.7) 0%, transparent 50%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 40px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .hero-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(240,237,232,0.5);
+    margin-bottom: 4px;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 140px);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-sub {
+    font-family: 'Cormorant', serif;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 8px;
+  }
+
+  .play-hint {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .hero:hover .play-hint { opacity: 1; }
+
+  .play-hint-icon {
+    width: 52px; height: 52px;
+    border: 1px solid rgba(240,237,232,0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .play-hint-icon svg { margin-left: 3px; }
+
+  .play-hint-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(240,237,232,0.6);
+  }
+
+  .hero-click-area {
+    position: absolute;
+    inset: 0;
+    cursor: none;
+  }
+
+  /* SELECTED WORKS */
+  .works-section {
+    padding: 80px 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: rgba(85,85,85,0.5);
+    letter-spacing: 0.1em;
+  }
+
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .work-item {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: #111;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  .work-item.placeholder {
+    border: 1px solid rgba(240,237,232,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .work-item.placeholder .placeholder-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: rgba(240,237,232,0.15);
+    text-transform: uppercase;
+  }
+
+  .work-thumb {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+    opacity: 0.75;
+  }
+
+  .work-item:hover .work-thumb {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+
+  .work-info {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px 16px 14px;
+    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 100%);
+    transform: translateY(4px);
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .work-item:hover .work-info { opacity: 1; transform: translateY(0); }
+
+  .work-client {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+  }
+
+  .work-item:hover .work-client { color: var(--accent); }
+
+  .work-discipline {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .work-play-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 40px; height: 40px;
+    border: 1px solid rgba(240,237,232,0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .work-item:hover .work-play-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+
+  .footer-meta {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(10,10,10,0.97);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .lightbox.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .lightbox-inner {
+    position: relative;
+    width: 90vw;
+    max-width: 1100px;
+    transform: translateY(20px);
+    transition: transform 0.35s ease;
+  }
+
+  .lightbox.open .lightbox-inner { transform: translateY(0); }
+
+  .lightbox-video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+  }
+
+  .lightbox-video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .lightbox-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 16px;
+    padding: 0 2px;
+  }
+
+  .lightbox-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+  }
+
+  .lightbox-discipline {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 28px; right: 28px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    padding: 8px 14px;
+    cursor: none;
+    transition: border-color 0.2s, color 0.2s;
+    z-index: 2001;
+  }
+
+  .lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute;
+    bottom: 28px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.4;
+    animation: fadeUpDown 2s ease-in-out infinite;
+  }
+
+  .scroll-hint span {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+  }
+
+  @keyframes fadeUpDown {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(6px); opacity: 0.2; }
+  }
+
+  /* NOISE GRAIN OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  @media (max-width: 768px) {
+    nav { gap: 16px; }
+    .nav-links { display: none; }
+    .works-grid { grid-template-columns: 1fr 1fr; }
+    .hero-content { padding: 0 20px 32px; }
+    .works-section { padding: 60px 20px; }
+    footer { padding: 30px 20px; }
+    nav { top: 20px; left: 20px; }
+  }
+  /* COOKIE BANNER */
+  .cookie-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 5000;
+    background: rgba(10,10,10,0.97);
+    border-top: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    transform: translateY(0);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+  .cookie-banner.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .cookie-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    max-width: 640px;
+  }
+  .cookie-text a {
+    color: var(--fg);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: none;
+  }
+  .cookie-text a:hover { color: var(--accent); }
+  .cookie-actions { display: flex; gap: 12px; flex-shrink: 0; }
+  .cookie-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    cursor: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .cookie-btn.accept {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .cookie-btn:hover { border-color: var(--fg); color: var(--fg); }
+  .cookie-btn.accept:hover { border-color: var(--accent); color: var(--accent); opacity: 0.7; }
+
+  @media (max-width: 768px) {
+    .cookie-banner { padding: 20px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor">
+  <div class="cursor-dot"></div>
+  <div class="cursor-star">
+    <svg viewBox="0 0 287 265" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(0,265) scale(0.1,-0.1)" fill="#41d14c" stroke="none">
+        <path d="M782 1998 c56 -87 358 -618 358 -629 0 -8 -83 -156 -184 -329 -101 -173 -183 -316 -181 -318 1 -1 147 81 324 184 177 102 328 184 334 181 7 -3 153 -86 326 -186 173 -100 315 -180 316 -179 2 2 -80 145 -181 318 -101 173 -184 322 -184 330 0 8 83 157 184 330 101 173 183 316 181 318 -1 1 -147 -81 -324 -184 -178 -102 -328 -183 -334 -181 -7 3 -153 86 -326 186 -172 99 -316 181 -318 181 -3 0 1 -10 9 -22z"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-name">Franco Conte</a>
+  <div class="nav-links">
+    <a href="#works">Works</a>
+    <a href="mailto:info@franco-conte.com">Contact</a>
+  </div>
+</nav>
+
+
+<!-- HERO -->
+<section class="hero" id="heroSection">
+  <div class="hero-thumb">
+    <!-- 
+      HERO THUMBNAIL:
+      This is the image shown before the video plays.
+      Replace the src below with a screenshot from your Nike video.
+      Ideally a frame that looks great fullscreen.
+    -->
+    <video 
+      id="heroThumb"
+      autoplay 
+      muted 
+      loop 
+      playsinline
+    >
+      <source media="(max-width: 768px)" src="NIKE-9x16.mp4" type="video/mp4">
+      <source src="NIKE-16x9.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="play-hint">
+    <div class="play-hint-icon">
+      <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+        <path d="M1 1L13 8L1 15V1Z" fill="white" opacity="0.8"/>
+      </svg>
+    </div>
+    <span class="play-hint-label">Play</span>
+  </div>
+
+  <div class="hero-content">
+    <h1 class="hero-title">Nike</h1>
+    <span class="hero-tag">Sound design · Music production</span>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+  </div>
+
+  <!-- Clicking anywhere on the hero opens the video -->
+  <div class="hero-click-area" id="heroClickArea"></div>
+</section>
+
+<!-- SELECTED WORKS -->
+<section class="works-section" id="works">
+  <div class="section-header">
+    <span class="section-title">Selected works</span>
+    <span class="section-count">2024 — 2026</span>
+  </div>
+
+  <div class="works-grid" id="worksGrid">
+
+    <!-- WORK ITEMS
+      Each item has:
+      - data-video: the YouTube video ID (the part after "v=" or the short code after "youtu.be/")
+      - data-client: brand name shown in the lightbox
+      - data-discipline: your role, shown under the title
+      
+      HOW TO SWITCH FROM YOUTUBE TO VIMEO LATER:
+      Change data-platform="youtube" to data-platform="vimeo"
+      Change data-video to the Vimeo video ID (the number in the URL: vimeo.com/123456789)
+      That's it. Everything else stays the same.
+    -->
+
+    <div class="work-item" 
+         data-video="NpP1DOkBKVs" 
+         data-platform="youtube"
+         data-client="Antony Morato" 
+         data-discipline="Sound design · Music production">
+      <img class="work-thumb" 
+           src="https://img.youtube.com/vi/NpP1DOkBKVs/maxresdefault.jpg" 
+           alt="Antony Morato">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Antony Morato</div>
+        <div class="work-discipline">Sound design · Music</div>
+      </div>
+    </div>
+
+    <div class="work-item" 
+         data-video="JalYsQ1LiGM" 
+         data-platform="youtube"
+         data-client="Prada" 
+         data-discipline="Sound design">
+      <img class="work-thumb" 
+           src="https://img.youtube.com/vi/JalYsQ1LiGM/maxresdefault.jpg" 
+           alt="Prada">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Prada</div>
+        <div class="work-discipline">Sound design</div>
+      </div>
+    </div>
+
+    <div class="work-item" 
+         data-video="YiQ8H-BB67Y" 
+         data-platform="youtube"
+         data-client="Emporio Armani" 
+         data-discipline="Sound design · Music production">
+      <img class="work-thumb" 
+           src="https://img.youtube.com/vi/YiQ8H-BB67Y/maxresdefault.jpg" 
+           alt="Emporio Armani">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Emporio Armani</div>
+        <div class="work-discipline">Sound design · Music</div>
+      </div>
+    </div>
+
+    <div class="work-item" 
+         data-video="290u33kcElk" 
+         data-platform="youtube"
+         data-client="Santini" 
+         data-discipline="Original music · Sound design">
+      <img class="work-thumb" 
+           src="https://img.youtube.com/vi/290u33kcElk/maxresdefault.jpg" 
+           alt="Santini">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Santini</div>
+        <div class="work-discipline">Original music · Sound design</div>
+      </div>
+    </div>
+
+    <!-- SONORA — no video yet, placeholder -->
+    <div class="work-item placeholder">
+      <span class="placeholder-text">Sonora × Joan Thiele — coming soon</span>
+    </div>
+
+    <!-- EMPTY SLOTS — fill these in later -->
+    <!-- 
+      To add a new work: copy one of the work-item divs above,
+      change data-video to the YouTube ID,
+      change data-client and data-discipline,
+      change the img src YouTube ID too.
+      Then delete one of these placeholder comments.
+    -->
+    <div class="work-item placeholder">
+      <span class="placeholder-text">— </span>
+    </div>
+    <div class="work-item placeholder">
+      <span class="placeholder-text">— </span>
+    </div>
+    <div class="work-item placeholder">
+      <span class="placeholder-text">— </span>
+    </div>
+    <div class="work-item placeholder">
+      <span class="placeholder-text">— </span>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">Franco Conte</span>
+  <span class="footer-meta">Sound design · Music production · Milan</span>
+  <div class="footer-links">
+    <a href="mailto:info@franco-conte.com">info@franco-conte.com</a>
+    <a href="https://franco-conte.com" target="_blank">Current site</a>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <div class="lightbox-video-wrap">
+      <iframe id="lightboxIframe" 
+              src="" 
+              allow="autoplay; fullscreen" 
+              allowfullscreen>
+      </iframe>
+    </div>
+    <div class="lightbox-meta">
+      <span class="lightbox-title" id="lightboxTitle"></span>
+      <span class="lightbox-discipline" id="lightboxDiscipline"></span>
+    </div>
+  </div>
+  <button class="lightbox-close" id="lightboxClose">CLOSE ×</button>
+</div>
+
+<script>
+  // ── CURSOR ──────────────────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  let mouseX = 0, mouseY = 0;
+  let curX = 0, curY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  // Smooth follow with slight lag
+  function animateCursor() {
+    curX += (mouseX - curX) * 0.27;
+    curY += (mouseY - curY) * 0.27;
+    cursor.style.left = curX + 'px';
+    cursor.style.top = curY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('a, button, .work-item, .hero-click-area').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('hover');
+      cursor.classList.remove('play');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hover');
+      cursor.classList.remove('play');
+    });
+  });
+  document.getElementById('heroClickArea').addEventListener('mouseenter', () => {
+    cursor.classList.remove('hover');
+    cursor.classList.add('play');
+  });
+  document.getElementById('heroClickArea').addEventListener('mouseleave', () => {
+    cursor.classList.remove('play');
+  });
+
+
+  // ── LIGHTBOX ────────────────────────────────────────────
+  const lightbox = document.getElementById('lightbox');
+  const lightboxIframe = document.getElementById('lightboxIframe');
+  const lightboxTitle = document.getElementById('lightboxTitle');
+  const lightboxDiscipline = document.getElementById('lightboxDiscipline');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  function buildEmbedUrl(platform, videoId) {
+    if (platform === 'vimeo') {
+      return `https://player.vimeo.com/video/${videoId}?autoplay=1&color=f0ede8&title=0&byline=0&portrait=0`;
+    }
+    // YOUTUBE — privacy-enhanced nocookie mode (GDPR compliant)
+    return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1`;
+  }
+
+  function openLightbox(platform, videoId, client, discipline) {
+    lightboxIframe.src = buildEmbedUrl(platform, videoId);
+    lightboxTitle.textContent = client;
+    lightboxDiscipline.textContent = discipline;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightboxIframe.src = '';
+    document.body.style.overflow = '';
+  }
+
+  // Hero click
+  document.getElementById('heroClickArea').addEventListener('click', () => {
+    openLightbox('youtube', 'rupZBak8gqc', 'Nike', 'Original music · Sound design');
+  });
+
+  // Work grid clicks
+  document.querySelectorAll('.work-item[data-video]').forEach(item => {
+    item.addEventListener('click', () => {
+      openLightbox(
+        item.dataset.platform || 'youtube',
+        item.dataset.video,
+        item.dataset.client,
+        item.dataset.discipline
+      );
+    });
+  });
+
+  // Close lightbox
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ── PAGE LOAD ANIMATION ─────────────────────────────────
+  document.querySelectorAll('.hero-content, nav, .mute-btn').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+    el.style.transition = `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`;
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 100);
+  });
+  // ── COOKIE BANNER ───────────────────────────────────────
+  const cookieBanner = document.getElementById('cookieBanner');
+  const cookieAccept = document.getElementById('cookieAccept');
+  const cookieRefuse = document.getElementById('cookieRefuse');
+
+  if (cookieBanner && cookieAccept && cookieRefuse) {
+    // Add cookie buttons to cursor hover tracking
+    [cookieAccept, cookieRefuse].forEach(btn => {
+      btn.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursor.classList.remove('play'); });
+      btn.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); });
+    });
+
+    function dismissBanner() {
+      cookieBanner.classList.add('hidden');
+    }
+
+    // Show banner only if no choice stored
+    if (!localStorage.getItem('fc_cookie_choice')) {
+      cookieBanner.classList.remove('hidden');
+    } else {
+      cookieBanner.classList.add('hidden');
+    }
+
+    cookieAccept.addEventListener('click', () => {
+      localStorage.setItem('fc_cookie_choice', 'accepted');
+      dismissBanner();
+    });
+
+    cookieRefuse.addEventListener('click', () => {
+      localStorage.setItem('fc_cookie_choice', 'refused');
+      dismissBanner();
+    });
+  }
+
+</script>
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+  <p class="cookie-text">
+    This site uses third-party services that may set cookies or collect anonymous usage data. By accepting, you consent to the use of such cookies. Refusing will not affect your browsing experience or video playback.
+  </p>
+  <div class="cookie-actions">
+    <button class="cookie-btn" id="cookieRefuse">Refuse</button>
+    <button class="cookie-btn accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
+
+</body>
+</html>
