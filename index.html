@@ -45,6 +45,11 @@
                 height 0.35s cubic-bezier(0.34,1.56,0.64,1);
   }
 
+  @media (hover: none) and (pointer: coarse) {
+    .cursor { display: none !important; }
+    * { cursor: auto !important; }
+  }
+
   /* default: white solid dot */
   .cursor .cursor-dot {
     position: absolute;
@@ -530,7 +535,7 @@
   @media (max-width: 768px) {
     nav { gap: 16px; }
     .nav-links { display: none; }
-    .works-grid { grid-template-columns: 1fr 1fr; }
+    .works-grid { grid-template-columns: 1fr; }
     .hero-content { padding: 0 20px 32px; }
     .works-section { padding: 60px 20px; }
     footer { padding: 30px 20px; }
@@ -657,7 +662,7 @@
 
   <div class="hero-content">
     <h1 class="hero-title">Nike</h1>
-    <span class="hero-tag">Sound design · Music production</span>
+    <span class="hero-tag">Sound design</span>
   </div>
 
   <div class="scroll-hint">
@@ -693,7 +698,7 @@
          data-video="NpP1DOkBKVs" 
          data-platform="youtube"
          data-client="Antony Morato" 
-         data-discipline="Sound design · Music production">
+         data-discipline="Original music">
       <img class="work-thumb" 
            src="https://img.youtube.com/vi/NpP1DOkBKVs/maxresdefault.jpg" 
            alt="Antony Morato">
@@ -704,7 +709,7 @@
       </div>
       <div class="work-info">
         <div class="work-client">Antony Morato</div>
-        <div class="work-discipline">Sound design · Music</div>
+        <div class="work-discipline">Original music</div>
       </div>
     </div>
 
@@ -731,7 +736,7 @@
          data-video="YiQ8H-BB67Y" 
          data-platform="youtube"
          data-client="Emporio Armani" 
-         data-discipline="Sound design · Music production">
+         data-discipline="Original music">
       <img class="work-thumb" 
            src="https://img.youtube.com/vi/YiQ8H-BB67Y/maxresdefault.jpg" 
            alt="Emporio Armani">
@@ -742,7 +747,7 @@
       </div>
       <div class="work-info">
         <div class="work-client">Emporio Armani</div>
-        <div class="work-discipline">Sound design · Music</div>
+        <div class="work-discipline">Original music</div>
       </div>
     </div>
 
@@ -825,41 +830,44 @@
 <script>
   // ── CURSOR ──────────────────────────────────────────────
   const cursor = document.getElementById('cursor');
-  let mouseX = 0, mouseY = 0;
-  let curX = 0, curY = 0;
+  const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
+  if (!isTouch) {
+    let mouseX = 0, mouseY = 0;
+    let curX = 0, curY = 0;
 
-  // Smooth follow with slight lag
-  function animateCursor() {
-    curX += (mouseX - curX) * 0.27;
-    curY += (mouseY - curY) * 0.27;
-    cursor.style.left = curX + 'px';
-    cursor.style.top = curY + 'px';
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
-
-  document.querySelectorAll('a, button, .work-item, .hero-click-area').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('hover');
-      cursor.classList.remove('play');
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
     });
-    el.addEventListener('mouseleave', () => {
+
+    function animateCursor() {
+      curX += (mouseX - curX) * 0.27;
+      curY += (mouseY - curY) * 0.27;
+      cursor.style.left = curX + 'px';
+      cursor.style.top = curY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    document.querySelectorAll('a, button, .work-item, .hero-click-area').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.classList.add('hover');
+        cursor.classList.remove('play');
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.classList.remove('hover');
+        cursor.classList.remove('play');
+      });
+    });
+    document.getElementById('heroClickArea').addEventListener('mouseenter', () => {
       cursor.classList.remove('hover');
+      cursor.classList.add('play');
+    });
+    document.getElementById('heroClickArea').addEventListener('mouseleave', () => {
       cursor.classList.remove('play');
     });
-  });
-  document.getElementById('heroClickArea').addEventListener('mouseenter', () => {
-    cursor.classList.remove('hover');
-    cursor.classList.add('play');
-  });
-  document.getElementById('heroClickArea').addEventListener('mouseleave', () => {
-    cursor.classList.remove('play');
-  });
+  }
 
 
   // ── LIGHTBOX ────────────────────────────────────────────
@@ -893,7 +901,7 @@
 
   // Hero click
   document.getElementById('heroClickArea').addEventListener('click', () => {
-    openLightbox('youtube', 'rupZBak8gqc', 'Nike', 'Original music · Sound design');
+    openLightbox('youtube', 'rupZBak8gqc', 'Nike', 'Sound design');
   });
 
   // Work grid clicks
