@@ -50,6 +50,8 @@
     * { cursor: auto !important; }
   }
 
+  .cursor.touch-hidden { display: none !important; }
+
   /* default: white solid dot */
   .cursor .cursor-dot {
     position: absolute;
@@ -770,30 +772,76 @@
       </div>
     </div>
 
-    <!-- SONORA — no video yet, placeholder -->
-    <div class="work-item placeholder">
-      <span class="placeholder-text">Sonora × Joan Thiele — coming soon</span>
+    <!-- SONORA × JOAN THIELE -->
+    <div class="work-item"
+         data-video="rFe45B46lUQ"
+         data-platform="youtube"
+         data-client="Sonora × Joan Thiele"
+         data-discipline="Sound design">
+      <img class="work-thumb" src="SONORA.jpg" alt="Sonora × Joan Thiele">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Sonora × Joan Thiele</div>
+        <div class="work-discipline">Sound design</div>
+      </div>
     </div>
 
-    <!-- EMPTY SLOTS — fill these in later -->
-    <!-- 
-      To add a new work: copy one of the work-item divs above,
-      change data-video to the YouTube ID,
-      change data-client and data-discipline,
-      change the img src YouTube ID too.
-      Then delete one of these placeholder comments.
-    -->
-    <div class="work-item placeholder">
-      <span class="placeholder-text">— </span>
+    <!-- PROMESSA × SNIPES × NIKE -->
+    <div class="work-item"
+         data-video="FeJL1CdWX1o"
+         data-platform="youtube"
+         data-client="Promessa × Snipes × Nike"
+         data-discipline="Sound design">
+      <img class="work-thumb" src="PROMESSA.jpg" alt="Promessa × Snipes × Nike">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Promessa × Snipes × Nike</div>
+        <div class="work-discipline">Sound design</div>
+      </div>
     </div>
-    <div class="work-item placeholder">
-      <span class="placeholder-text">— </span>
+
+    <!-- BONACINA -->
+    <div class="work-item"
+         data-video="OAaqCxTxGvQ"
+         data-platform="youtube"
+         data-client="Bonacina"
+         data-discipline="Sound design">
+      <img class="work-thumb" src="BONACINA.jpg" alt="Bonacina">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">Bonacina</div>
+        <div class="work-discipline">Sound design</div>
+      </div>
     </div>
-    <div class="work-item placeholder">
-      <span class="placeholder-text">— </span>
-    </div>
-    <div class="work-item placeholder">
-      <span class="placeholder-text">— </span>
+
+    <!-- YLA -->
+    <div class="work-item"
+         data-video="ebKdd6etsCk"
+         data-platform="youtube"
+         data-client="YLA"
+         data-discipline="Original music · Sound design">
+      <img class="work-thumb" src="YLA.jpg" alt="YLA">
+      <div class="work-play-icon">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <path d="M0.5 0.5L9.5 6L0.5 11.5V0.5Z" fill="white" opacity="0.8"/>
+        </svg>
+      </div>
+      <div class="work-info">
+        <div class="work-client">YLA</div>
+        <div class="work-discipline">Original music · Sound design</div>
+      </div>
     </div>
 
   </div>
@@ -828,6 +876,11 @@
 </div>
 
 <script>
+  // Hide cursor permanently on first touch
+  window.addEventListener('touchstart', () => {
+    cursor.classList.add('touch-hidden');
+  }, { once: true });
+
   // ── CURSOR ──────────────────────────────────────────────
   const cursor = document.getElementById('cursor');
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
