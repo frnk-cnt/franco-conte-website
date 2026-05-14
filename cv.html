@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV — Franco Conte</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant:ital,wght@1,300&family=Syne:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ede8;
+    --muted: #555;
+    --accent: #41d14c;
+    --border: rgba(240,237,232,0.1);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                height 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .cursor .cursor-dot {
+    position: absolute;
+    width: 7px; height: 7px;
+    background: var(--fg);
+    border-radius: 50%;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .cursor .cursor-star {
+    position: absolute;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform: scale(0.4) rotate(-15deg);
+  }
+  .cursor .cursor-star svg { width: 100%; height: 100%; }
+  .cursor.hover { width: 28px; height: 28px; }
+  .cursor.hover .cursor-dot { opacity: 0; transform: scale(0); }
+  .cursor.hover .cursor-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  @media (hover: none) and (pointer: coarse) {
+    .cursor { display: none !important; }
+    * { cursor: auto !important; }
+  }
+  .cursor.touch-hidden { display: none !important; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 28px; left: 28px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .nav-name {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--fg);
+  }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+    font-weight: 300;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* PAGE */
+  .page {
+    padding: 120px 40px 80px;
+    max-width: 860px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .page-label {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .pdf-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pdf-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .pdf-btn::before { content: '↓'; font-size: 12px; }
+
+  .cv-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+
+  .cv-role {
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .cv-bio {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(240,237,232,0.7);
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+
+  .cv-location {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 64px;
+  }
+
+  /* SECTIONS */
+  .cv-section {
+    margin-bottom: 56px;
+  }
+
+  .cv-section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--fg);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cv-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cv-list li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(240,237,232,0.04);
+  }
+
+  .cv-list li:last-child { border-bottom: none; }
+
+  .cv-item-name {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--fg);
+    letter-spacing: 0.02em;
+  }
+
+  .cv-item-name a {
+    color: var(--fg);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+  }
+  .cv-item-name a:hover { color: var(--accent); }
+
+  .cv-item-bold { font-weight: 500; }
+
+  .cv-item-desc {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  .cv-item-left { display: flex; flex-direction: column; }
+
+  .cv-item-tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  /* SKILLS */
+  .cv-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cv-skill {
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(240,237,232,0.7);
+    line-height: 1.7;
+    padding-left: 16px;
+    border-left: 1px solid var(--border);
+  }
+
+  .cv-languages {
+    margin-top: 24px;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .footer-name { font-size: 12px; font-weight: 400; letter-spacing: 0.08em; }
+  .footer-meta { font-size: 11px; font-weight: 300; color: var(--muted); letter-spacing: 0.08em; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-size: 11px; font-weight: 300; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    transition: color 0.2s; cursor: none;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* NOISE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(10,10,10,0.97);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox-inner {
+    position: relative;
+    width: 90vw;
+    max-width: 1100px;
+    transform: translateY(20px);
+    transition: transform 0.35s ease;
+  }
+  .lightbox.open .lightbox-inner { transform: translateY(0); }
+  .lightbox-video-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+  }
+  .lightbox-video-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .lightbox-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 16px;
+    padding: 0 2px;
+  }
+  .lightbox-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+  }
+  .lightbox-discipline {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .lightbox-close {
+    position: fixed;
+    top: 28px; right: 28px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    padding: 8px 14px;
+    cursor: none;
+    transition: border-color 0.2s, color 0.2s;
+    z-index: 2001;
+  }
+  .lightbox-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* VIDEO LINKS */
+  .cv-item-name a.video-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cv-item-name a.video-link::after {
+    content: '▶';
+    font-size: 8px;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .cv-item-name a.video-link:hover::after { opacity: 1; color: var(--accent); }
+
+  @media (max-width: 768px) {
+    nav { gap: 16px; top: 20px; left: 20px; }
+    .nav-links { display: none; }
+    .page { padding: 100px 20px 60px; }
+    footer { padding: 30px 20px; }
+    .cv-list li { grid-template-columns: 1fr; }
+    .cv-item-tag { text-align: left; margin-top: 2px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor">
+  <div class="cursor-dot"></div>
+  <div class="cursor-star">
+    <svg viewBox="0 0 287 265" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(0,265) scale(0.1,-0.1)" fill="#41d14c" stroke="none">
+        <path d="M782 1998 c56 -87 358 -618 358 -629 0 -8 -83 -156 -184 -329 -101 -173 -183 -316 -181 -318 1 -1 147 81 324 184 177 102 328 184 334 181 7 -3 153 -86 326 -186 173 -100 315 -180 316 -179 2 2 -80 145 -181 318 -101 173 -184 322 -184 330 0 8 83 157 184 330 101 173 183 316 181 318 -1 1 -147 -81 -324 -184 -178 -102 -328 -183 -334 -181 -7 3 -153 86 -326 186 -172 99 -316 181 -318 181 -3 0 1 -10 9 -22z"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-name">Franco Conte</a>
+  <div class="nav-links">
+    <a href="index.html#works">Works</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page">
+
+    <div class="page-header">
+      <span class="page-label">Curriculum Vitae</span>
+      <!-- 
+        PDF DOWNLOAD BUTTON
+        When your PDF is ready:
+        1. Put it in the site folder, e.g. FC_CV.pdf
+        2. Change href below from "#" to "FC_CV.pdf"
+      -->
+      <a href="#" class="pdf-btn">Download PDF</a>
+    </div>
+
+    <h1 class="cv-name">Franco<br>Conte</h1>
+    <div class="cv-role">Sound for media / Creative technology</div>
+    <p class="cv-bio">I specialize in sound design and music production for commercials, podcasts, interactive installations and performing arts. With a degree in music technology from the Conservatory of Vicenza, I combine a strong foundation in music theory with technical expertise to create immersive audio experiences.</p>
+    <div class="cv-location">Based in Milan</div>
+
+    <!-- SOUND DESIGN -->
+    <div class="cv-section">
+      <div class="cv-section-title">Sound design</div>
+      <ul class="cv-list">
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="rupZBak8gqc" data-title="Nike" data-discipline="Sound design">Nike</a></span>
+            <span class="cv-item-desc">Commercial</span>
+          </div>
+          <span class="cv-item-tag">Commercial</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="e3RPWKF1bUM" data-title="LVMH" data-discipline="Sound design">LVMH</a></span>
+            <span class="cv-item-desc">Commercial</span>
+          </div>
+          <span class="cv-item-tag">Commercial</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="JalYsQ1LiGM" data-title="Prada" data-discipline="Sound design">Prada</a></span>
+            <span class="cv-item-desc">"The Miranda July Hotline" FW 24/25 campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="https://open.spotify.com/episode/4PYtuNWYsmGTffH8JLfPGW" target="_blank">Storie di Brand</a></span>
+            <span class="cv-item-desc">Podcast episodes</span>
+          </div>
+          <span class="cv-item-tag">Podcast</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="e0083nKC5pU" data-title="Wolf | Storie che contano" data-discipline="Sound design">Wolf | Storie che contano</a></span>
+            <span class="cv-item-desc">Release commercial</span>
+          </div>
+          <span class="cv-item-tag">Commercial</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="8bGJ6vdsHFQ" data-title="Durazzi | Fenomena" data-discipline="Sound design">Durazzi | Fenomena</a></span>
+            <span class="cv-item-desc">Fashion film — FFFMilano 2023 selection</span>
+          </div>
+          <span class="cv-item-tag">Fashion film</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="OAaqCxTxGvQ" data-title="Bonacina | Celeste" data-discipline="Sound design">Bonacina | Celeste</a></span>
+            <span class="cv-item-desc">Short film</span>
+          </div>
+          <span class="cv-item-tag">Short film</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="ey3HJBh2f4A" data-title="Paul & Shark" data-discipline="Sound design">Paul &amp; Shark</a></span>
+            <span class="cv-item-desc">Commercial</span>
+          </div>
+          <span class="cv-item-tag">Commercial</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="-YSB9bHVBIw" data-title="9inthemorning" data-discipline="Sound design">9inthemorning</a></span>
+            <span class="cv-item-desc">FW 23/24 campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MUSIC PRODUCTION -->
+    <div class="cv-section">
+      <div class="cv-section-title">Music production</div>
+      <ul class="cv-list">
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="NpP1DOkBKVs" data-title="Antony Morato" data-discipline="Music production">Antony Morato</a></span>
+            <span class="cv-item-desc">FW 24/25 campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="YiQ8H-BB67Y" data-title="Emporio Armani" data-discipline="Music production">Emporio Armani</a></span>
+            <span class="cv-item-desc">FW 25/26 campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="n8dATn56ARw" data-title="Antony Morato" data-discipline="Music production">Antony Morato</a></span>
+            <span class="cv-item-desc">SS 25/26 campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="fF30SN6zGk8" data-title="Onitsuka Tiger" data-discipline="Music production">Onitsuka Tiger</a></span>
+            <span class="cv-item-desc">Milano Fashion Week SS 24/25 collection premiere</span>
+          </div>
+          <span class="cv-item-tag">Fashion week</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="fMDe6mahbZE" data-title="YOOX" data-discipline="Music production">YOOX</a></span>
+            <span class="cv-item-desc">The Grand and Marvelous holiday fair campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="https://open.spotify.com/episode/3T181iJ3WufxxsgxjUK85t" target="_blank">Rivista Studio</a></span>
+            <span class="cv-item-desc">Podcast theme</span>
+          </div>
+          <span class="cv-item-tag">Podcast</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="G1Gu_Yjsl2U" data-title="Tod's" data-discipline="Music production">Tod's</a></span>
+            <span class="cv-item-desc">Tod's Holidays campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="vtXzOgWxF4A" data-title="Diedra" data-discipline="Music production">Diedra</a></span>
+            <span class="cv-item-desc">Kickstarter campaign</span>
+          </div>
+          <span class="cv-item-tag">Campaign</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="https://francoconte.bandcamp.com/album/vrt-34" target="_blank">VRT-34</a></span>
+            <span class="cv-item-desc">Live set project</span>
+          </div>
+          <span class="cv-item-tag">Live</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="ZVKomufHD_k" data-title="Aganis" data-discipline="Music production">Aganis</a></span>
+            <span class="cv-item-desc">Body performance — Teatro Comandini</span>
+          </div>
+          <span class="cv-item-tag">Performance</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="3nzQh81S3LY" data-title="Sogni Zero" data-discipline="Music production">Sogni Zero</a></span>
+            <span class="cv-item-desc">Theater performance — Piccolo Teatro Grassi and Studio Melato</span>
+          </div>
+          <span class="cv-item-tag">Performance</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MUSIC TECHNOLOGY -->
+    <div class="cv-section">
+      <div class="cv-section-title">Music technology</div>
+      <ul class="cv-list">
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="rFe45B46lUQ" data-title="Sonora — Joan Thiele & Carlo Cossignani" data-discipline="Interaction design">Sonora — Joan Thiele &amp; Carlo Cossignani</a></span>
+            <span class="cv-item-desc">Interaction design and development</span>
+          </div>
+          <span class="cv-item-tag">Interactive</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="YDZdLB4gCTw" data-title="Kinexa" data-discipline="Music technology">Kinexa</a></span>
+            <span class="cv-item-desc">Real time motion capture-based music interaction</span>
+          </div>
+          <span class="cv-item-tag">Interactive</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name"><a href="#" class="video-link" data-video="oyc9aMNXWJs" data-title="Fornasetti" data-discipline="Music technology">Fornasetti</a></span>
+            <span class="cv-item-desc">Interaction sound design &amp; music</span>
+          </div>
+          <span class="cv-item-tag">Interactive</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold">Romeo Castellucci — Senza Titolo</span>
+            <span class="cv-item-desc">Max for Live devices development — Triennale di Milano</span>
+          </div>
+          <span class="cv-item-tag">Installation</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="GBRh2BblCkQ" data-title="AiEP — Citizen" data-discipline="VR / Workshop">AiEP — Citizen</a></span>
+            <span class="cv-item-desc">VR experience — Residenze Digitali. Workshop lecturer at Seoul Institute of Arts</span>
+          </div>
+          <span class="cv-item-tag">VR / Workshop</span>
+        </li>
+        <li>
+          <div class="cv-item-left">
+            <span class="cv-item-name cv-item-bold"><a href="#" class="video-link" data-video="hbdE8vg0Deg" data-title="Intervalli festival" data-discipline="Music technology">Intervalli festival</a></span>
+            <span class="cv-item-desc">Algorithms for live audio-reactivity development</span>
+          </div>
+          <span class="cv-item-tag">Live</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="cv-section">
+      <div class="cv-section-title">Skills</div>
+      <div class="cv-skills">
+        <p class="cv-skill">Collaborated with cross-disciplinary teams to meet tight deadlines for large-scale commercial projects</p>
+        <p class="cv-skill">Applied knowledge of audio computing and generative AI to create innovative sound design and interactive music for digital experiences</p>
+        <p class="cv-skill">Developed expertise in both classical harmony and contemporary compositional techniques</p>
+      </div>
+      <div class="cv-languages">Languages — Italian · English · Spanish</div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <span class="footer-name">Franco Conte</span>
+  <span class="footer-meta">Sound design · Music production · Milan</span>
+  <div class="footer-links">
+    <a href="mailto:info@franco-conte.com">info@franco-conte.com</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <div class="lightbox-video-wrap">
+      <iframe id="lightboxIframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </div>
+    <div class="lightbox-meta">
+      <span class="lightbox-title" id="lightboxTitle"></span>
+      <span class="lightbox-discipline" id="lightboxDiscipline"></span>
+    </div>
+  </div>
+  <button class="lightbox-close" id="lightboxClose">CLOSE ×</button>
+</div>
+
+<script>
+  window.addEventListener('touchstart', () => {
+    cursor.classList.add('touch-hidden');
+  }, { once: true });
+
+  const cursor = document.getElementById('cursor');
+  const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  if (!isTouch) {
+    let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    function animateCursor() {
+      curX += (mouseX - curX) * 0.27;
+      curY += (mouseY - curY) * 0.27;
+      cursor.style.left = curX + 'px';
+      cursor.style.top = curY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  }
+
+  // ── LIGHTBOX ────────────────────────────────────────────
+  const lightbox = document.getElementById('lightbox');
+  const lightboxIframe = document.getElementById('lightboxIframe');
+  const lightboxTitle = document.getElementById('lightboxTitle');
+  const lightboxDiscipline = document.getElementById('lightboxDiscipline');
+  const lightboxClose = document.getElementById('lightboxClose');
+
+  function buildEmbedUrl(videoId) {
+    return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1`;
+  }
+
+  function openLightbox(videoId, title, discipline) {
+    lightboxIframe.src = buildEmbedUrl(videoId);
+    lightboxTitle.textContent = title;
+    lightboxDiscipline.textContent = discipline;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    cursor.style.opacity = '0';
+    document.body.style.cursor = 'auto';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightboxIframe.src = '';
+    document.body.style.overflow = '';
+    cursor.style.opacity = '1';
+    document.body.style.cursor = 'none';
+  }
+
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // Intercept all video links
+  document.querySelectorAll('a[data-video]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      openLightbox(link.dataset.video, link.dataset.title, link.dataset.discipline);
+    });
+  });
+</script>
+</body>
+</html>

@@ -326,7 +326,7 @@
     position: absolute;
     bottom: 0; left: 0; right: 0;
     padding: 20px 16px 14px;
-    background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 100%);
+    background: linear-gradient(to top, rgba(10,10,10,0.98) 0%, rgba(10,10,10,0.5) 60%, transparent 100%);
     transform: translateY(4px);
     opacity: 0;
     transition: opacity 0.25s ease, transform 0.25s ease;
@@ -626,7 +626,8 @@
   <a href="#" class="nav-name">Franco Conte</a>
   <div class="nav-links">
     <a href="#works">Works</a>
-    <a href="mailto:info@franco-conte.com">Contact</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </div>
 </nav>
 
@@ -776,8 +777,8 @@
     <div class="work-item"
          data-video="rFe45B46lUQ"
          data-platform="youtube"
-         data-client="Sonora × Joan Thiele"
-         data-discipline="Sound design">
+         data-client="Sonora by Joan Thiele"
+         data-discipline="Interaction design and development">
       <img class="work-thumb" src="SONORA.jpg" alt="Sonora × Joan Thiele">
       <div class="work-play-icon">
         <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
@@ -785,8 +786,8 @@
         </svg>
       </div>
       <div class="work-info">
-        <div class="work-client">Sonora × Joan Thiele</div>
-        <div class="work-discipline">Sound design</div>
+        <div class="work-client">Sonora by Joan Thiele</div>
+        <div class="work-discipline">Interaction design and development</div>
       </div>
     </div>
 
@@ -853,7 +854,8 @@
   <span class="footer-meta">Sound design · Music production · Milan</span>
   <div class="footer-links">
     <a href="mailto:info@franco-conte.com">info@franco-conte.com</a>
-    <a href="https://franco-conte.com" target="_blank">Current site</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </div>
 </footer>
 
@@ -944,12 +946,16 @@
     lightboxDiscipline.textContent = discipline;
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
+    cursor.style.opacity = '0';
+    document.body.style.cursor = 'auto';
   }
 
   function closeLightbox() {
     lightbox.classList.remove('open');
     lightboxIframe.src = '';
     document.body.style.overflow = '';
+    cursor.style.opacity = '1';
+    document.body.style.cursor = 'none';
   }
 
   // Hero click

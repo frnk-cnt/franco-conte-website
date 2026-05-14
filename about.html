@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Franco Conte</title>
+<meta name="description" content="Sound designer, composer and audiovisual programmer based in Milan, working on commercials, VR experiences, performing arts and podcasting projects.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant:ital,wght@1,300&family=Syne:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ede8;
+    --muted: #555;
+    --accent: #41d14c;
+    --border: rgba(240,237,232,0.1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                height 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .cursor .cursor-dot {
+    position: absolute;
+    width: 7px; height: 7px;
+    background: var(--fg);
+    border-radius: 50%;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .cursor .cursor-star {
+    position: absolute;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform: scale(0.4) rotate(-15deg);
+  }
+  .cursor .cursor-star svg { width: 100%; height: 100%; }
+  .cursor.hover { width: 28px; height: 28px; }
+  .cursor.hover .cursor-dot { opacity: 0; transform: scale(0); }
+  .cursor.hover .cursor-star { opacity: 1; transform: scale(1) rotate(0deg); }
+  @media (hover: none) and (pointer: coarse) {
+    .cursor { display: none !important; }
+    * { cursor: auto !important; }
+  }
+  .cursor.touch-hidden { display: none !important; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 28px; left: 28px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .nav-name {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--fg);
+    font-family: 'Syne', sans-serif;
+  }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+    font-family: 'Syne', sans-serif;
+    font-weight: 300;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a.active { color: var(--fg); }
+
+  /* PAGE */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 40px 80px;
+    max-width: 780px;
+  }
+
+  .page-label {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    margin-bottom: 48px;
+  }
+
+  .about-text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(240,237,232,0.8);
+    letter-spacing: 0.02em;
+    margin-bottom: 24px;
+  }
+
+  .about-text a {
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s, color 0.2s;
+    cursor: none;
+  }
+  .about-text a:hover { color: var(--accent); border-color: var(--accent); }
+
+  .about-clients {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .about-clients-label {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .about-clients-list {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: rgba(240,237,232,0.4);
+    line-height: 1.6;
+  }
+
+  .about-clients-list span {
+    transition: color 0.2s;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+  .footer-meta {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: none;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* NOISE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  @media (max-width: 768px) {
+    nav { gap: 16px; top: 20px; left: 20px; }
+    .nav-links { display: none; }
+    .page { padding: 100px 20px 60px; }
+    footer { padding: 30px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor">
+  <div class="cursor-dot"></div>
+  <div class="cursor-star">
+    <svg viewBox="0 0 287 265" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(0,265) scale(0.1,-0.1)" fill="#41d14c" stroke="none">
+        <path d="M782 1998 c56 -87 358 -618 358 -629 0 -8 -83 -156 -184 -329 -101 -173 -183 -316 -181 -318 1 -1 147 81 324 184 177 102 328 184 334 181 7 -3 153 -86 326 -186 173 -100 315 -180 316 -179 2 2 -80 145 -181 318 -101 173 -184 322 -184 330 0 8 83 157 184 330 101 173 183 316 181 318 -1 1 -147 -81 -324 -184 -178 -102 -328 -183 -334 -181 -7 3 -153 86 -326 186 -172 99 -316 181 -318 181 -3 0 1 -10 9 -22z"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-name">Franco Conte</a>
+  <div class="nav-links">
+    <a href="index.html#works">Works</a>
+    <a href="about.html" class="active">About</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page">
+    <div class="page-label">About</div>
+    <h1 class="page-title">Franco<br>Conte</h1>
+
+    <p class="about-text">
+      I'm Franco Conte, a sound designer, composer, and audiovisual programmer based in Milan. I design and curate sound for commercials, VR experiences, performing arts and podcasting projects.
+    </p>
+    <p class="about-text">
+      My background, combined with a passion for the tech world, has allowed me to develop an approach to audio contaminated by new technologies, such as audio generative AI and binaural audio.
+    </p>
+    <p class="about-text">
+      I lectured a workshop on interactive dance alongside <a href="https://youtu.be/GBRh2BblCkQ" target="_blank">AiEP</a> at Seoul Institute of Arts, and have presented work at Piccolo Teatro, Triennale di Milano, Lugano's LAC, MEET Digital Culture Center and Teatro Comandini.
+    </p>
+
+    <div class="about-clients">
+      <div class="about-clients-label">Selected clients</div>
+      <div class="about-clients-list">
+        Emporio Armani · Nike · Antony Morato · LVMH · Prada · YOOX · Tod's · Santini · Bonacina · Snipes
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span class="footer-name">Franco Conte</span>
+  <span class="footer-meta">Sound design · Music production · Milan</span>
+  <div class="footer-links">
+    <a href="mailto:info@franco-conte.com">info@franco-conte.com</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('touchstart', () => {
+    cursor.classList.add('touch-hidden');
+  }, { once: true });
+
+  const cursor = document.getElementById('cursor');
+  const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  if (!isTouch) {
+    let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    function animateCursor() {
+      curX += (mouseX - curX) * 0.27;
+      curY += (mouseY - curY) * 0.27;
+      cursor.style.left = curX + 'px';
+      cursor.style.top = curY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  }
+</script>
+</body>
+</html>
