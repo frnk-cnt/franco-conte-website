@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Franco Conte — Sound Design & Music Production</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant:ital,wght@1,300&family=Syne:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,8 +40,10 @@
     justify-content: center;
     width: 12px;
     height: 12px;
+    opacity: 0;
     transition: width 0.35s cubic-bezier(0.34,1.56,0.64,1),
-                height 0.35s cubic-bezier(0.34,1.56,0.64,1);
+                height 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                opacity 0.2s ease;
   }
 
   @media (hover: none) and (pointer: coarse) {
@@ -106,11 +107,14 @@
   nav {
     position: fixed;
     top: 28px; left: 28px;
-    z-index: 1000;
+    z-index: 1500;
     display: flex;
     align-items: center;
     gap: 32px;
   }
+  /* Force cursor none on all interactive elements */
+  a, button, [role="button"] { cursor: none !important; }
+
   .nav-name {
     font-size: 13px;
     font-weight: 400;
@@ -118,6 +122,8 @@
     text-decoration: none;
     color: var(--fg);
     font-family: 'Syne', sans-serif;
+    padding: 12px 0;
+    cursor: none !important;
   }
   .nav-links { display: flex; gap: 24px; }
   .nav-links a {
@@ -127,9 +133,10 @@
     color: var(--muted);
     text-decoration: none;
     transition: color 0.2s;
-    cursor: none;
+    cursor: none !important;
     font-family: 'Syne', sans-serif;
     font-weight: 300;
+    padding: 12px 4px;
   }
   .nav-links a:hover { color: var(--accent); }
 
@@ -448,6 +455,13 @@
     background: #000;
   }
 
+  .lightbox-video-wrap.short {
+    aspect-ratio: 9/16;
+    max-height: 80vh;
+    width: auto;
+    margin: 0 auto;
+  }
+
   .lightbox-video-wrap iframe {
     position: absolute;
     inset: 0;
@@ -605,6 +619,13 @@
     .cookie-banner { padding: 20px; flex-direction: column; align-items: flex-start; }
   }
 </style>
+  <style>
+    @font-face { font-family: "Bebas Neue"; src: url("fonts/BebasNeue.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Syne"; src: url("fonts/Syne-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Syne"; src: url("fonts/Syne-500.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Syne"; src: url("fonts/Syne-400.woff2") format("woff2"); font-weight: 300; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Cormorant"; src: url("fonts/Cormorant-300-Italic.woff2") format("woff2"); font-weight: 300; font-style: italic; font-display: swap; }
+  </style>
 </head>
 <body>
 
@@ -795,6 +816,7 @@
     <div class="work-item"
          data-video="FeJL1CdWX1o"
          data-platform="youtube"
+         data-short="true"
          data-client="Promessa × Snipes × Nike"
          data-discipline="Sound design">
       <img class="work-thumb" src="PROMESSA.jpg" alt="Promessa × Snipes × Nike">
@@ -878,29 +900,40 @@
 </div>
 
 <script>
-  // Hide cursor permanently on first touch
-  window.addEventListener('touchstart', () => {
-    cursor.classList.add('touch-hidden');
-  }, { once: true });
-
   // ── CURSOR ──────────────────────────────────────────────
   const cursor = document.getElementById('cursor');
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
+  // Hide cursor on touch devices
+  window.addEventListener('touchstart', () => {
+    cursor.classList.add('touch-hidden');
+  }, { once: true });
+
   if (!isTouch) {
     let mouseX = 0, mouseY = 0;
     let curX = 0, curY = 0;
+    let cursorVisible = false;
 
     document.addEventListener('mousemove', e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      if (!cursorVisible) {
+        curX = mouseX;
+        curY = mouseY;
+        cursor.style.left = curX + 'px';
+        cursor.style.top = curY + 'px';
+        cursor.style.opacity = '1';
+        cursorVisible = true;
+      }
     });
 
     function animateCursor() {
-      curX += (mouseX - curX) * 0.27;
-      curY += (mouseY - curY) * 0.27;
-      cursor.style.left = curX + 'px';
-      cursor.style.top = curY + 'px';
+      if (cursorVisible) {
+        curX += (mouseX - curX) * 0.27;
+        curY += (mouseY - curY) * 0.27;
+        cursor.style.left = curX + 'px';
+        cursor.style.top = curY + 'px';
+      }
       requestAnimationFrame(animateCursor);
     }
     animateCursor();
@@ -940,10 +973,16 @@
     return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1`;
   }
 
-  function openLightbox(platform, videoId, client, discipline) {
+  function openLightbox(platform, videoId, client, discipline, isShort) {
     lightboxIframe.src = buildEmbedUrl(platform, videoId);
     lightboxTitle.textContent = client;
     lightboxDiscipline.textContent = discipline;
+    const videoWrap = document.querySelector('.lightbox-video-wrap');
+    if (isShort) {
+      videoWrap.classList.add('short');
+    } else {
+      videoWrap.classList.remove('short');
+    }
     lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
     cursor.style.opacity = '0';
@@ -960,7 +999,7 @@
 
   // Hero click
   document.getElementById('heroClickArea').addEventListener('click', () => {
-    openLightbox('youtube', 'rupZBak8gqc', 'Nike', 'Sound design');
+    openLightbox('youtube', 'rupZBak8gqc', 'Nike', 'Sound design', false);
   });
 
   // Work grid clicks
@@ -970,7 +1009,8 @@
         item.dataset.platform || 'youtube',
         item.dataset.video,
         item.dataset.client,
-        item.dataset.discipline
+        item.dataset.discipline,
+        item.dataset.short === 'true'
       );
     });
   });
@@ -1013,8 +1053,6 @@
     // Show banner only if no choice stored
     if (!localStorage.getItem('fc_cookie_choice')) {
       cookieBanner.classList.remove('hidden');
-    } else {
-      cookieBanner.classList.add('hidden');
     }
 
     cookieAccept.addEventListener('click', () => {
@@ -1030,9 +1068,9 @@
 
 </script>
 <!-- COOKIE BANNER -->
-<div class="cookie-banner" id="cookieBanner">
+<div class="cookie-banner hidden" id="cookieBanner">
   <p class="cookie-text">
-    This site uses third-party services that may set cookies or collect anonymous usage data. By accepting, you consent to the use of such cookies. Refusing will not affect your browsing experience or video playback.
+    This site uses third-party services that may set cookies or collect anonymous usage data. By accepting, you consent to the use of such cookies. Refusing will not affect your browsing experience or video playback. <a href="privacy.html" style="color:var(--fg);text-decoration:underline;text-underline-offset:3px;">Privacy policy</a>
   </p>
   <div class="cookie-actions">
     <button class="cookie-btn" id="cookieRefuse">Refuse</button>
