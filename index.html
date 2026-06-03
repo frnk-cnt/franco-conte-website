@@ -145,6 +145,8 @@
     padding: 12px 4px;
   }
   .nav-links a:hover { color: var(--accent); }
+  .nav-links a:visited { color: var(--muted); }
+  @media (hover: none) { .nav-links a:hover { color: var(--muted); } }
 
   /* HERO */
   .hero {
@@ -555,13 +557,13 @@
   }
 
   @media (max-width: 768px) {
-    nav { gap: 16px; }
-    .nav-links { display: none; }
+    nav { gap: 16px; top: 20px; left: 20px; }
+    .nav-links { display: flex; gap: 16px; }
+    .nav-links a { font-size: 10px; }
     .works-grid { grid-template-columns: 1fr; }
     .hero-content { padding: 0 20px 32px; }
     .works-section { padding: 60px 20px; }
     footer { padding: 30px 20px; }
-    nav { top: 20px; left: 20px; }
   }
   /* COOKIE BANNER */
   .cookie-banner {
@@ -877,8 +879,20 @@
     <a href="mailto:info@franco-conte.com">info@franco-conte.com</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
+    <a href="privacy.html" target="_blank">Privacy</a>
   </div>
 </footer>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner hidden" id="cookieBanner">
+  <p class="cookie-text">
+    This site uses third-party services that may set cookies or collect anonymous usage data. By accepting, you consent to the use of such cookies. Refusing will not affect your browsing experience or video playback. <a href="privacy.html" target="_blank" style="color:var(--fg);text-decoration:underline;text-underline-offset:3px;">Privacy policy</a>
+  </p>
+  <div class="cookie-actions">
+    <button class="cookie-btn" id="cookieRefuse">Refuse</button>
+    <button class="cookie-btn accept" id="cookieAccept">Accept</button>
+  </div>
+</div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
@@ -925,6 +939,8 @@
         cursorVisible = true;
       }
     });
+    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { if (cursorVisible) cursor.style.opacity = '1'; });
 
     function animateCursor() {
       if (cursorVisible) {
@@ -1066,16 +1082,6 @@
   }
 
 </script>
-<!-- COOKIE BANNER -->
-<div class="cookie-banner hidden" id="cookieBanner">
-  <p class="cookie-text">
-    This site uses third-party services that may set cookies or collect anonymous usage data. By accepting, you consent to the use of such cookies. Refusing will not affect your browsing experience or video playback. <a href="privacy.html" style="color:var(--fg);text-decoration:underline;text-underline-offset:3px;">Privacy policy</a>
-  </p>
-  <div class="cookie-actions">
-    <button class="cookie-btn" id="cookieRefuse">Refuse</button>
-    <button class="cookie-btn accept" id="cookieAccept">Accept</button>
-  </div>
-</div>
 
 </body>
 </html>

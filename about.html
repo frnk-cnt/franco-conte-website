@@ -222,7 +222,8 @@
 
   @media (max-width: 768px) {
     nav { gap: 16px; top: 20px; left: 20px; }
-    .nav-links { display: none; }
+    .nav-links { display: flex; gap: 16px; }
+    .nav-links a { font-size: 10px; }
     .page { padding: 100px 20px 60px; }
     footer { padding: 30px 20px; }
   }
@@ -262,7 +263,7 @@
       My background, combined with a passion for the tech world, has allowed me to develop an approach to audio contaminated by new technologies, such as audio generative AI and binaural audio.
     </p>
     <p class="about-text">
-      I lectured a workshop on interactive dance alongside <a href="https://youtu.be/GBRh2BblCkQ" target="_blank">AiEP</a> at Seoul Institute of Arts, and have presented work at Piccolo Teatro, Triennale di Milano, Lugano's LAC, MEET Digital Culture Center and Teatro Comandini.
+      I lectured a workshop on interactive dance alongside AiEP at Seoul Institute of Arts, and have presented work at Piccolo Teatro, Triennale di Milano, Lugano's LAC, MEET Digital Culture Center and Teatro Comandini.
     </p>
 
     <div class="about-clients">
@@ -293,8 +294,15 @@
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   if (!isTouch) {
+    cursor.style.opacity = '0';
     let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    let hasMoved = false;
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!hasMoved) { curX = mouseX; curY = mouseY; hasMoved = true; cursor.style.opacity = '1'; }
+    });
+    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { if (hasMoved) cursor.style.opacity = '1'; });
     function animateCursor() {
       curX += (mouseX - curX) * 0.27;
       curY += (mouseY - curY) * 0.27;

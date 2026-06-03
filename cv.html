@@ -386,7 +386,8 @@
 
   @media (max-width: 768px) {
     nav { gap: 16px; top: 20px; left: 20px; }
-    .nav-links { display: none; }
+    .nav-links { display: flex; gap: 16px; }
+    .nav-links a { font-size: 10px; }
     .page { padding: 100px 20px 60px; }
     footer { padding: 30px 20px; }
     .cv-list li { grid-template-columns: 1fr; }
@@ -686,8 +687,15 @@
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   if (!isTouch) {
+    cursor.style.opacity = '0';
     let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
-    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    let hasMoved = false;
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!hasMoved) { curX = mouseX; curY = mouseY; hasMoved = true; cursor.style.opacity = '1'; }
+    });
+    document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { if (hasMoved) cursor.style.opacity = '1'; });
     function animateCursor() {
       curX += (mouseX - curX) * 0.27;
       curY += (mouseY - curY) * 0.27;
